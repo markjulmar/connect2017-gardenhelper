@@ -1,0 +1,63 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:local="clr-namespace:GardenHelper"
+             xmlns:vm="clr-namespace:GardenHelper.ViewModels;assembly=GardenHelper.ViewModels"
+             Title="Welcome to the Garden Helper"
+             x:Class="GardenHelper.MainPage"
+             IsBusy="{Binding IsBusy}">
+
+    <ContentPage.BindingContext>
+        <vm:MainViewModel />
+    </ContentPage.BindingContext>
+    
+    <Grid RowSpacing="20" ColumnSpacing="20">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="2*" />
+            <RowDefinition />
+        </Grid.RowDefinitions>
+
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+        
+        <Image Source="background.jpg" Aspect="AspectFill" Grid.RowSpan="3" Grid.ColumnSpan="2" />
+
+        <Frame BackgroundColor="#90ffffff" Grid.Row="0" Padding="20" Grid.ColumnSpan="2">
+            <Label>
+                Take a picture of the plant, try to capture the distinguishing characteristics and make sure it's in focus.
+            </Label>
+        </Frame>
+
+        <Button Text=" Take a Photo " Image="camera.png" 
+        		Grid.Column="0" Grid.Row="1"
+                Command="{Binding TakePhoto}" AutomationId="CameraButton" />
+
+        <Button Text=" Existing Photo " Image="tulip.png" 
+        		Grid.Column="1" Grid.Row="1"
+                Command="{Binding PickPhoto}" AutomationId="PhotoLibraryButton" />
+
+        <!-- Processing -->
+        <ActivityIndicator Grid.Row="2" Grid.ColumnSpan="2"
+            Color="White" 
+            AutomationId="ActivityIndicator"
+            WidthRequest="48" HeightRequest="48"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            IsRunning="{Binding IsBusy}"
+            IsVisible="{Binding IsBusy}" />
+
+        <!-- Display any error -->
+        <Frame BackgroundColor="#c0ffffff" HorizontalOptions="Fill" 
+               VerticalOptions="End" Padding="20" Grid.RowSpan="3"
+               IsVisible="{Binding HasError}" Grid.ColumnSpan="2">
+            <Label TextColor="Red" HorizontalTextAlignment="Center" VerticalTextAlignment="Center"
+               Text="{Binding Error}" AutomationId="ErrorText" />
+        </Frame>
+
+    </Grid>
+
+</ContentPage>

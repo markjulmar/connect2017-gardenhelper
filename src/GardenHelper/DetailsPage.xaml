@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://xamarin.com/schemas/2014/forms"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:cvt="clr-namespace:XamarinUniversity.Converters;assembly=XamU.Infrastructure"
+             x:Class="GardenHelper.DetailsPage" BackgroundColor="#D1F2A5"
+             Title="{Binding Name, StringFormat='I think it\'s a {0}'}">
+
+    <Grid RowSpacing="0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <Frame BackgroundColor="Black" Grid.Row="0" HorizontalOptions="Fill" VerticalOptions="Fill">
+            <Image Source="{Binding ImageStream, Converter={cvt:StreamToImageSourceConverter}}" 
+               HorizontalOptions="Center" VerticalOptions="Fill" Margin="10" />
+        </Frame>
+
+        <Frame BackgroundColor="DarkGreen" Grid.Row="1" Margin="0">
+            <Label TextColor="White" VerticalTextAlignment="Center"
+                   Text="{Binding Price, StringFormat='Current price is {0:C}'}" />
+        </Frame>
+        
+        <ScrollView Grid.Row="2" Orientation="Vertical" Margin="10">
+            <Label Text="{Binding Description}" />
+        </ScrollView>
+
+        <StackLayout Grid.Row="3" Margin="10,10,10,0" Spacing="10">
+            <Button Text="Get More Information" Command="{Binding ShowWikkiPage}" />
+            
+            <Label Text="{Binding AttributionText}"
+                   IsVisible="{Binding HasLicense}" FontSize="Micro"
+                   HorizontalOptions="Center" />
+        </StackLayout>
+        
+    </Grid>
+    
+</ContentPage>
