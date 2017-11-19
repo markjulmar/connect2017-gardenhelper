@@ -14,25 +14,24 @@ namespace GardenHelper.Services.Azure
     {
         public async Task<string> IdentifyAsync(Func<Stream> picture)
         {
-            var t1 = GetImageDescriptionAsync(picture.Invoke());
-            var t2 = PredictImageAsync(picture.Invoke());
-            await Task.WhenAll(t1, t2).ConfigureAwait(false);
-
-            var description = t1.Result;
-            if (description != null)
+            var description = await GetImageDescriptionAsync(picture.Invoke());
+            if (description?.Tags.Any(t => t.Name == "plant" || t.Name == "flower") != true)
             {
-                if (!description.Description.Tags.Contains("plant")
-                 && !description.Description.Tags.Contains("flower"))
-                {
-                    throw new Exception("Your picture does not appear to contain a plant. Please try again.");
-                }
-
-                var tag = t2.Result.Predictions.OrderByDescending(t => t.Probability).FirstOrDefault();
-                if (tag?.Probability >= .25)
-                    return tag.Tag;
+                throw new Exception("Your picture does not appear to contain a plant. Please try again.");
             }
 
-            return null;
+            var hint = description.Tags.FirstOrDefault(t => t.Hint == "flower");
+            if (hint != null)
+                return hint.Name;
+
+        	var result = await PredictImageAsync(picture.Invoke());
+            var tag = result.Predictions.OrderByDescending(t => t.Probability).FirstOrDefault();
+            if (tag?.Probability < .25)
+            {
+                throw new Exception("I'm sorry, I don't recognize that plant.");
+            }
+
+            return tag?.Tag;
         }
 
         private async Task<ImagePredictionResultModel> PredictImageAsync(Stream stream)
@@ -46,12 +45,7 @@ namespace GardenHelper.Services.Azure
         {
             try
             {
-                VisualFeature[] features = {
-                    VisualFeature.Tags,
-                    VisualFeature.Categories,
-                    VisualFeature.Description
-                };
-
+                VisualFeature[] features = { VisualFeature.Tags };
                 IVisionServiceClient visionClient = new VisionServiceClient(AuthKeys.VisionSubscriptionKey, AuthKeys.VisionUrl);
 
                 return visionClient.AnalyzeImageAsync(imageStream, features.ToList(), null);
